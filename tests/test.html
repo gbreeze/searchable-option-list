@@ -1,0 +1,65 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <link rel="stylesheet" href="../sol.css">
+    <script type="text/javascript" src="jQuery.js"></script>
+    <script type="text/javascript" src="../sol.js"></script>
+
+</head>
+<body>
+    <h2>sol test</h2>
+
+    <form>
+        <div>
+            <select id="demonstration" name="demonstration" style="width: 250px" multiple="multiple" required>
+                <option value="Evil Monkey">Evil Monkey</option>
+                <option value="Herbert">John Herbert</option>
+                <option value="Adam">Adam West</option>
+                <option value="Buzz Killington">Buzz Killington</option>
+                <option value="Tricia">Tricia Takanawa</option>
+                <option value="Tom">Tom Tucker</option>
+                <option value="Jake">Jake Tucker</option>
+                <option value="Diane">Diane Simmons</option>
+                <option value="Ollie">Ollie Williams</option>
+                <option value="Dr Hartmann">Dr. Elmer Hartmann</option>
+                <option value="Barbara">Barbara Pewterschmidt</option>
+                <option value="Carter">Carter Pewterschmidt</option>
+                <option value="Neil">Neil Goldmann</option>
+                <option value="Mort">Mort Goldmann</option>
+                <option value="Muriel">Muriel Goldmann</option>
+                <option value="Consuela">Consuela</option>
+                <option value="Jillian">Jillian Russel</option>
+                <option value="Phineas and Barnaby">Phineas and Barnaby</option>
+                <option value="Vern and Johnny">Vern and Johnny</option>
+                <option value="Ernie">Ernie The Giant Chicken</option>
+                <option value="Bruce">Bruce</option>
+                <option value="Jeffrey">Jeffrey</option>
+                <option value="Carl">Carl</option>
+            </select>
+
+            <br />
+            <input type="text" required />
+        </div>
+
+        <br />
+
+        <button type="submit">OK</button>
+    </form>
+
+    <script type="text/javascript">
+        $(function () {
+            // initialize sol
+            $('#demonstration').searchableOptionList({
+                showSelectionBelowList: true,
+                maxHeight: '250px'
+            });
+        });
+    </script>
+
+</body>
+</html>
