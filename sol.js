@@ -240,10 +240,6 @@
             this.$input = $('<input type="text"/>')
                 .attr('placeholder', this.config.texts.searchplaceholder);
 
-            if (self.$originalElement[0].required) {
-                this.$input[0].required = true;
-            }
-
             this.$noResultsItem = $('<div class="sol-no-results"/>').html(this.config.texts.noItemsAvailable).hide();
             this.$loadingData = $('<div class="sol-loading-data"/>').html(this.config.texts.loadingData);
             this.$xItemsSelected = $('<div class="sol-results-count"/>');
@@ -692,6 +688,14 @@
 
                     if ($.isFunction(this.config.events.onInitialized)) {
                         this.config.events.onInitialized.call(this, this, solItems);
+                    }
+
+                    // set validation
+                    if(!solItems.filter(function(value) { return value.selected }).length)
+                    {
+                        if (self.$originalElement[0].required) {
+                            this.$input[0].required = true;
+                        }
                     }
                 },
                 loopFunction = function () {
