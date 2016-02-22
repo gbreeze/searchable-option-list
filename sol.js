@@ -124,6 +124,7 @@
 
             useBracketParameters: false,
             multiple: undefined,
+            required: undefined,
             showSelectionBelowList: false,
             allowNullSelection: false,
             scrollTarget: undefined,
@@ -153,6 +154,8 @@
             }
 
             this.config.multiple = this.config.multiple || this.$originalElement.attr('multiple');
+            this.config.required = this.config.required || this.$originalElement.attr('required');
+            this.$originalElement.removeAttr('required');
 
             if (!this.config.scrollTarget) {
                 this.config.scrollTarget = $(window);
@@ -251,7 +254,7 @@
             });
 
             var $inputContainer = $('<div class="sol-input-container"/>').append(this.$input);
-            this.$innerContainer = $('<div class="sol-inner-container"/>').append($inputContainer).append(this.$caret);
+            this.$innerContainer = $('<div class="sol-inner-container form-control"/>').append($inputContainer).append(this.$caret);
             this.$selection = $('<div class="sol-selection"/>');
             this.$selectionContainer = $('<div class="sol-selection-container"/>')
                 .append(this.$noResultsItem)
@@ -686,16 +689,15 @@
                     this.$loadingData.remove();
                     this._initializeSelectAll();
 
-                    if ($.isFunction(this.config.events.onInitialized)) {
-                        this.config.events.onInitialized.call(this, this, solItems);
-                    }
-
                     // set validation
-                    if(!solItems.filter(function(value) { return value.selected }).length)
-                    {
-                        if (self.$originalElement[0].required) {
+                    if (!solItems.filter(function (value) { return value.selected }).length) {
+                        if (this.config.required) {
                             this.$input[0].required = true;
                         }
+                    }
+
+                    if ($.isFunction(this.config.events.onInitialized)) {
+                        this.config.events.onInitialized.call(this, this, solItems);
                     }
                 },
                 loopFunction = function () {
@@ -878,8 +880,7 @@
                 this.config.events.onChange.call(this, this, $changeItem);
             }
 
-            if(this.$originalElement[0].required)
-            {
+            if (this.config.required) {
                 this.$input[0].required = selected.length == 0;
             }
         },
