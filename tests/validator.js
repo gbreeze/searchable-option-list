@@ -115,10 +115,10 @@
 
         function getNativeKey(el) {
             var key = '';
-            if(el.validity.patternMismatch) key = 'pattern-';
-            if(el.validity.tooShort) key = 'minlength-';
-            if(el.validity.tooLong) key = 'maxlength-';
-            
+            if (el.validity.patternMismatch) key = 'pattern-';
+            if (el.validity.tooShort) key = 'minlength-';
+            if (el.validity.tooLong) key = 'maxlength-';
+
             return key;
         }
 
