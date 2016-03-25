@@ -1021,8 +1021,24 @@
             }
         },
 
+        select: function (value) {
+            var $changedInputs = this.$selectionContainer
+                .find('input:checkbox[value=' + value + ']:not([disabled], :checked)')
+                .prop('checked', true)
+                .trigger('change', true);
+
+            if ($.isFunction(this.config.events.onChange)) {
+                this.config.events.onChange.call(this, this, $changedInputs);
+            }
+        },
+        
         getSelection: function () {
             return this.$selection.find('input:checked');
+        },
+
+        setRequired: function (val) {
+            this.config.required = val;
+            this.$input[0].required = val && !this.getSelection().length;
         }
     };
 
