@@ -65,6 +65,7 @@
 
             events: {
                 onInitialized: undefined,
+                onDataLoaded:undefined,
                 onRendered: undefined,
                 onOpen: undefined,
                 onClose: undefined,
@@ -174,6 +175,11 @@
                     .data(sol.DATA_KEY, sol)
                     .removeAttr('name')
                     .data('sol-name', originalName);
+
+                if ($.isFunction(sol.config.events.onInitialized)) {
+                    sol.config.events.onInitialized.call(this, sol, sol.items);
+                }
+
             }, 0);
 
             this.$originalElement.hide();
@@ -397,8 +403,8 @@
                 })
                 .on('propertychange input', function (e) {
                     var valueChanged = true;
-                    if (e.type=='propertychange') {
-                        valueChanged = e.originalEvent.propertyName.toLowerCase()=='value';
+                    if (e.type == 'propertychange') {
+                        valueChanged = e.originalEvent.propertyName.toLowerCase() == 'value';
                     }
                     if (valueChanged) {
                         self._applySearchTermFilter();
@@ -567,6 +573,33 @@
                 // done right away -> invoke postprocessing
                 this._processDataItems(this.items);
             }
+
+            // set validation
+            if (!this.items.filter(function (value) { return value.selected }).length) {
+                if (this.config.required) {
+                    this.$input[0].required = true;
+                }
+            }
+        },
+
+        setData: function (data) {
+            // remove old items
+            if (this.config.multiple) {
+                var $changedInputs = this.$selectionContainer
+                    .find('input[type="checkbox"]:not([disabled]):checked')
+                    .prop('checked', false)
+                    .trigger('change', true);
+
+                this.close();
+            }
+            this.$selection.empty();
+           
+            // load data from data and not from the config:
+            if (data == null)
+                data = [];
+
+            this.config.data = data;            
+            this._initializeData();
         },
 
         _detectDataFromOriginalElement: function () {
@@ -679,7 +712,15 @@
             if (solItems.length === 0) {
                 this._setNoResultsItemVisible(true);
                 this.$loadingData.remove();
+
+                if ($.isFunction(this.config.events.onDataLoaded)) {
+                    this.config.events.onDataLoaded.call(this, this, solItems);
+                }
+
                 return;
+            }
+            else {
+                this._setNoResultsItemVisible(false);
             }
 
             var self = this,
@@ -689,15 +730,8 @@
                     this.$loadingData.remove();
                     this._initializeSelectAll();
 
-                    // set validation
-                    if (!solItems.filter(function (value) { return value.selected }).length) {
-                        if (this.config.required) {
-                            this.$input[0].required = true;
-                        }
-                    }
-
-                    if ($.isFunction(this.config.events.onInitialized)) {
-                        this.config.events.onInitialized.call(this, this, solItems);
+                    if ($.isFunction(this.config.events.onDataLoaded)) {
+                        this.config.events.onDataLoaded.call(this, this, solItems);
                     }
                 },
                 loopFunction = function () {
@@ -811,7 +845,7 @@
 
         _initializeSelectAll: function () {
             // multiple values selectable
-            if (this.config.showSelectAll === true || ($.isFunction(this.config.showSelectAll) && this.config.showSelectAll.call(this))) {
+            if (this.$actionButtons === undefined && (this.config.showSelectAll === true || ($.isFunction(this.config.showSelectAll) && this.config.showSelectAll.call(this)))) {
                 // buttons for (de-)select all
                 var self = this,
                     $deselectAllButton = $('<a href="#" class="sol-deselect-all"/>').html(this.config.texts.selectNone).click(function (e) {
@@ -876,12 +910,12 @@
                 this.$xItemsSelected.hide();
             }
 
-            if (!skipCallback && $.isFunction(this.config.events.onChange)) {
-                this.config.events.onChange.call(this, this, $changeItem);
-            }
-
             if (this.config.required) {
                 this.$input[0].required = selected.length == 0;
+            }
+
+            if (!skipCallback && $.isFunction(this.config.events.onChange)) {
+                this.config.events.onChange.call(this, this, $changeItem);
             }
         },
 
@@ -1031,7 +1065,7 @@
                 this.config.events.onChange.call(this, this, $changedInputs);
             }
         },
-        
+
         getSelection: function () {
             return this.$selection.find('input:checked');
         },
@@ -1058,7 +1092,7 @@
                 var newSol = new SearchableOptionList($this, options);
                 result.push(newSol);
 
-                setTimeout(function() {
+                setTimeout(function () {
                     newSol.init();
                 }, 0);
             }
